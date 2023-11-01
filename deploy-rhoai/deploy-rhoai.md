@@ -38,7 +38,7 @@ oc patch installplan \
 
 ```
 
-```
+```bash
 cat <<EOF | oc apply  -f -
 apiVersion: datasciencecluster.opendatahub.io/v1
 kind: DataScienceCluster
@@ -62,7 +62,7 @@ spec:
     kserve:
       managementState: Removed
     modelmeshserving:
-      managementState: Removed
+      managementState: Managed
     ray:
       managementState: Removed
     workbenches:

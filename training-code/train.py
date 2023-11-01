@@ -16,7 +16,7 @@ import pickle
 import os
 from pathlib import Path
 
-Data = pd.read_csv('data/card_transdata.csv')
+Data = pd.read_csv('../training-data/card_transdata.csv')
 # Data.head()
 
 # Set the input (X) and output (Y) data.

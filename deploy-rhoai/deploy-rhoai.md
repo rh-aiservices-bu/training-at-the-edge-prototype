@@ -2,6 +2,9 @@
 
 
 ```bash
+
+oc -n redhat-ods-operator delete OperatorGroup --all
+
 cat <<EOF | oc apply  -f -
 kind: List
 metadata: {}
@@ -11,6 +14,11 @@ items:
       kind: Project
       metadata:
           name: redhat-ods-operator
+  -   apiVersion: operators.coreos.com/v1
+      kind: OperatorGroup
+      metadata:
+          name: redhat-ods-operator
+          namespace: redhat-ods-operator
   -   apiVersion: operators.coreos.com/v1alpha1
       kind: Subscription
       metadata:
@@ -22,19 +30,14 @@ items:
           name: rhods-operator
           source: redhat-operators
           sourceNamespace: openshift-marketplace
-          startingCSV: rhods-operator.2.2.0
-  -   apiVersion: operators.coreos.com/v1
-      kind: OperatorGroup
-      metadata:
-          name: redhat-operators
-          namespace: redhat-ods-operator
+          #startingCSV: rhods-operator.2.2.0
 EOF
 
-oc patch installplan \
-    $(oc get installplans -n redhat-ods-operator | grep -v NAME | awk '{print $1}') \
-    -n redhat-ods-operator \
-    --type='json' \
-    -p '[{"op": "replace", "path": "/spec/approved", "value": true}]'
+# oc patch installplan \
+#     $(oc get installplans -n redhat-ods-operator | grep -v NAME | awk '{print $1}') \
+#     -n redhat-ods-operator \
+#     --type='json' \
+#     -p '[{"op": "replace", "path": "/spec/approved", "value": true}]'
 
 ```
 

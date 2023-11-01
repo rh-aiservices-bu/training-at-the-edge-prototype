@@ -16,7 +16,7 @@ import pickle
 import os
 from pathlib import Path
 
-Data = pd.read_csv('../training-data/card_transdata.csv')
+Data = pd.read_csv('card_transdata.csv')
 # Data.head()
 
 # Set the input (X) and output (Y) data.
@@ -77,9 +77,8 @@ history = model.fit(X_train, y_train, epochs=epochs, \
 # Save the model as ONNX for easy use of ModelMesh
 
 model_proto, _ = tf2onnx.convert.from_keras(model)
-os.makedirs("models/fraud", exist_ok=True)
-onnx.save(model_proto, "models/fraud/model.onnx")
-
+# os.makedirs("models/fraud", exist_ok=True)
+onnx.save(model_proto, "model.onnx")
 
 
 ## testing
@@ -95,7 +94,7 @@ with open('artifact/scaler.pkl', 'rb') as handle:
 with open('artifact/test_data.pkl', 'rb') as handle:
     (X_test, y_test) = pickle.load(handle)
 
-sess = rt.InferenceSession("models/fraud/model.onnx", providers=rt.get_available_providers())
+sess = rt.InferenceSession("model.onnx", providers=rt.get_available_providers())
 input_name = sess.get_inputs()[0].name
 output_name = sess.get_outputs()[0].name
 y_pred_temp = sess.run([output_name], {input_name: scaler.transform(X_test.values).astype(np.float32)})

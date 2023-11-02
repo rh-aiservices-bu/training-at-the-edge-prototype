@@ -34,7 +34,7 @@
             "label": "",
             "ui_data": {
               "label": "train.py",
-              "image": "/notebook/a-great-project/tiny-tf/static/elyra/python.svg",
+              "image": "/notebook/pipeline/pipelines/static/elyra/python.svg",
               "x_pos": 92,
               "y_pos": 159,
               "description": "Run Python script"
@@ -90,7 +90,7 @@
             "label": "",
             "ui_data": {
               "label": "upload.py",
-              "image": "/notebook/a-great-project/tiny-tf/static/elyra/python.svg",
+              "image": "/notebook/pipeline/pipelines/static/elyra/python.svg",
               "x_pos": 230,
               "y_pos": 261,
               "description": "Run Python script"
@@ -143,13 +143,39 @@
           "name": "train",
           "runtime": "Data Science Pipelines",
           "pipeline_defaults": {
+            "kubernetes_tolerations": [],
             "kubernetes_shared_mem_size": {},
             "mounted_volumes": [],
-            "kubernetes_tolerations": [],
             "kubernetes_pod_labels": [],
             "kubernetes_pod_annotations": [],
             "env_vars": [],
-            "kubernetes_secrets": [],
+            "kubernetes_secrets": [
+              {
+                "env_var": "AWS_ACCESS_KEY_ID",
+                "name": "aws-connection-my-storage",
+                "key": "AWS_ACCESS_KEY_ID"
+              },
+              {
+                "env_var": "AWS_S3_BUCKET",
+                "name": "aws-connection-my-storage",
+                "key": "AWS_S3_BUCKET"
+              },
+              {
+                "env_var": "AWS_S3_ENDPOINT",
+                "name": "aws-connection-my-storage",
+                "key": "AWS_S3_ENDPOINT"
+              },
+              {
+                "env_var": "AWS_SECRET_ACCESS_KEY",
+                "name": "aws-connection-my-storage",
+                "key": "AWS_SECRET_ACCESS_KEY"
+              },
+              {
+                "env_var": "AWS_DEFAULT_REGION",
+                "name": "aws-connection-my-storage",
+                "key": "AWS_DEFAULT_REGION"
+              }
+            ],
             "cos_object_prefix": "edge",
             "runtime_image": "quay.io/modh/runtime-images@sha256:8df90db22b29afb1cd9c81d52be9145fed50e3b04ec80bb7ea7ecaa7476dbe5c"
           },

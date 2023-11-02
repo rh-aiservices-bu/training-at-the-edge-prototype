@@ -3,7 +3,8 @@
 ```bash
 #Create Minio and secrets
 
-oc apply -n edgetraining -f https://raw.githubusercontent.com/rh-aiservices-bu/training-at-the-edge-prototype/main/deploy-rhoai/setup-minio.yaml
+# oc apply -n edgetraining -f https://raw.githubusercontent.com/rh-aiservices-bu/training-at-the-edge-prototype/main/deploy-rhoai/setup-minio.yaml
+
 
 
 ```
@@ -11,9 +12,7 @@ oc apply -n edgetraining -f https://raw.githubusercontent.com/rh-aiservices-bu/t
 
 ```bash
 
-# oc delete project edgetraining
-
-
+ oc delete project edgetraining
 
 cat <<EOF | oc apply  -f -
 kind: List
@@ -32,6 +31,14 @@ items:
         openshift.io/display-name: "Edge Training"
         openshift.io/requester: admin
 EOF
+
+oc apply -n edgetraining -f ./setup-minio.yaml
+
+
+
+
+
+
 
 cat <<EOF | oc apply  -f -
 kind: List

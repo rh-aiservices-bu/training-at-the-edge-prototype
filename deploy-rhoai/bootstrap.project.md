@@ -12,7 +12,7 @@
 
 ```bash
 
- oc delete project edgetraining
+oc delete project edgetraining
 
 cat <<EOF | oc apply  -f -
 kind: List
@@ -33,13 +33,13 @@ items:
 EOF
 
 oc apply -n edgetraining -f ./setup-minio.yaml
+```
 
 
 
 
 
-
-
+<!--
 cat <<EOF | oc apply  -f -
 kind: List
 metadata: {}
@@ -129,7 +129,7 @@ items:
           storage:
             key: aws-connection-my-storage
             path: modelv01/
-  
+
   - apiVersion: datasciencepipelinesapplications.opendatahub.io/v1alpha1
     kind: DataSciencePipelinesApplication
     metadata:
@@ -184,3 +184,4 @@ EOF
 
 
 ```
+-->

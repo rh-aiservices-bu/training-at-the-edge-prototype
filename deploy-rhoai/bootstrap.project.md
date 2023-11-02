@@ -1,15 +1,3 @@
-
-
-```bash
-#Create Minio and secrets
-
-# oc apply -n edgetraining -f https://raw.githubusercontent.com/rh-aiservices-bu/training-at-the-edge-prototype/main/deploy-rhoai/setup-minio.yaml
-
-
-
-```
-
-
 ```bash
 
 oc delete project edgetraining
@@ -32,7 +20,7 @@ items:
         openshift.io/requester: admin
 EOF
 
-oc apply -n edgetraining -f ./setup-minio.yaml
+oc apply -n edgetraining -f ./bootstrap.project.yaml.yaml
 ```
 
 

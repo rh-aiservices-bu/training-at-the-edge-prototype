@@ -23,8 +23,15 @@ EOF
 oc apply -n edgetraining -f ./bootstrap.project.yaml
 
 # wait for the secrets to be created ...
+echo -n 'Waiting for my-storage secret'
+while ! oc -n edgetraining get secret aws-connection-my-storage 2>/dev/null ; do
+  echo -n .
+  sleep 5
+done; echo
+
 
 oc apply -n edgetraining -f ./pipelineserver.yaml
+oc apply -n edgetraining -f ./modelserving.yaml
 
 ```
 

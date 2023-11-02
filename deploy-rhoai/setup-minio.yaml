@@ -480,6 +480,8 @@ apiVersion: datasciencepipelinesapplications.opendatahub.io/v1alpha1
 kind: DataSciencePipelinesApplication
 metadata:
   name: pipelines-definition
+  finalizers:
+  - datasciencepipelinesapplications.opendatahub.io/finalizer
 spec:
   apiServer:
     applyTektonCustomResource: true
@@ -500,19 +502,19 @@ spec:
       pipelineDBName: mlpipeline
       pvcSize: 10Gi
       username: mlpipeline
-  mlmd:
-    deploy: false
+  #mlmd:
+  #  deploy: false
   objectStorage:
     externalStorage:
       bucket: pipeline-artifacts
-      host: minio-s3-edgetraining.apps.cluster-d279z.dynamic.opentlc.com
+      host: minio-service.minio.svc:9000
       port: ""
       s3CredentialsSecret:
         accessKey: AWS_ACCESS_KEY_ID
         secretKey: AWS_SECRET_ACCESS_KEY
         secretName: aws-connection-pipeline-artifacts
-      scheme: https
-      secure: true
+      scheme: http
+      secure: false
   persistenceAgent:
     deploy: true
     numWorkers: 2

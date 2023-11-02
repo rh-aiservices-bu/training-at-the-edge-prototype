@@ -20,7 +20,12 @@ items:
         openshift.io/requester: admin
 EOF
 
-oc apply -n edgetraining -f ./bootstrap.project.yaml.yaml
+oc apply -n edgetraining -f ./bootstrap.project.yaml
+
+# wait for the secrets to be created ...
+
+oc apply -n edgetraining -f ./pipelineserver.yaml
+
 ```
 
 

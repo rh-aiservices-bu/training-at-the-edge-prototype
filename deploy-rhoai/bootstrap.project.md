@@ -122,6 +122,51 @@ items:
           storage:
             key: aws-connection-my-storage
             path: modelv01/
+  
+  - apiVersion: datasciencepipelinesapplications.opendatahub.io/v1alpha1
+    kind: DataSciencePipelinesApplication
+    metadata:
+      finalizers:
+      - datasciencepipelinesapplications.opendatahub.io/finalizer
+      name: pipelines-definition
+      namespace: edgetraining
+    spec:
+      apiServer:
+        applyTektonCustomResource: true
+        archiveLogs: false
+        autoUpdatePipelineDefaultVersion: true
+        collectMetrics: true
+        dbConfigConMaxLifetimeSec: 120
+        deploy: true
+        enableOauth: true
+        enableSamplePipeline: false
+        injectDefaultScript: true
+        stripEOF: true
+        terminateStatus: Cancelled
+        trackArtifacts: true
+      database:
+        mariaDB:
+          deploy: true
+          pipelineDBName: mlpipeline
+          pvcSize: 10Gi
+          username: mlpipeline
+      objectStorage:
+        externalStorage:
+          bucket: pipeline-artifacts
+          host: minio-service.minio.svc:9000
+          port: ''
+          s3CredentialsSecret:
+            accessKey: AWS_ACCESS_KEY_ID
+            secretKey: AWS_SECRET_ACCESS_KEY
+            secretName: aws-connection-pipeline-artifacts
+          scheme: http
+          secure: false
+      persistenceAgent:
+        deploy: true
+        numWorkers: 2
+      scheduledWorkflow:
+        cronScheduleTimezone: UTC
+        deploy: true
 
 EOF
 

@@ -29,11 +29,6 @@ spec:
       - name: pinger
         image: quay.io/modh/odh-generic-data-science-notebook@sha256:f1c285f88f37abb0d54efc1941f349dfed824896568bcd359770e15d78fdb9f9
         command:
-        - conda
-        - run
-        - --live-stream
-        - -n=watson-runtime
-        - PYTHONPATH=/app:/opt/miniconda/envs/watson-runtime/lib64/python3.9/site-packages
         - python
         - -u
         - /ping_model.py
@@ -58,6 +53,43 @@ spec:
       - name: pinger-config
         configMap:
           name: model-pinger
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -69,9 +101,28 @@ data:
     import time
     from datetime import datetime
 
-    import grpc
+    deployed_model_name = "fraud-latest"
+    rest_url = "http://modelmesh-serving:8008"
+    infer_url = f"{rest_url}/v2/models/{deployed_model_name}/infer"
 
-    from generated import common_service_pb2_grpc, common_service_pb2
+    import requests
+
+    def rest_request(data):
+        json_data = {
+            "inputs": [
+                {
+                    "name": "dense_input",
+                    "shape": [1, 5],
+                    "datatype": "FP32",
+                    "data": data
+                }
+            ]
+        }
+
+        response = requests.post(infer_url, json=json_data)
+        response_dict = response.json()
+        return response_dict['outputs'][0]['data']
+
 
     MM_SERVING_HOST = os.environ.get("MM_SERVING_HOST", "modelmesh-serving:8033")
     MM_MODEL_NAME = os.environ.get("MM_MODEL_NAME", "ansible-model-pinger")
@@ -79,41 +130,39 @@ data:
     SLEEP_TIME = os.environ.get("SLEEP_TIME", "3")
     SLEEP_TIME = int(SLEEP_TIME)
 
-    # PROMPT = os.environ.get("PROMPT", "- name: Configure php-fpm pool (if enabled).")
-    # CONTEXT = os.environ.get("CONTEXT", "- name: Define php_fpm_daemon.\n  set_fact:\n    php_fpm_daemon: \"{{ __php_fpm_daemon }}\"\n  when: php_fpm_daemon is not defined\n\n- name: Define php_fpm_pool_conf_path.\n  set_fact:\n    php_fpm_pool_conf_path: \"{{ __php_fpm_pool_conf_path }}\"\n  when: php_fpm_pool_conf_path is not defined\n\n- name: Define php_fpm_pool_user.\n  set_fact:\n    php_fpm_pool_user: \"{{ __php_fpm_pool_user }}\"\n  when: php_fpm_pool_user is not defined\n\n- name: Define php_fpm_pool_group.\n  set_fact:\n    php_fpm_pool_group: \"{{ __php_fpm_pool_group }}\"\n  when: php_fpm_pool_group is not defined\n\n- name: Stat php_fpm_pool_conf_path\n  stat:\n    path: \"{{ php_fpm_pool_conf_path | dirname }}\"\n  register: php_fpm_pool_conf_path_dir_stat\n\n- name: Ensure the default pool directory exists.\n  file:\n    path: \"{{ php_fpm_pool_conf_path | dirname }}\"\n    state: directory\n    owner: root\n    group: root\n    mode: 493\n  when: php_fpm_pool_conf_path_dir_stat.stat.islnk is not defined\n\n- name: Ensure the default pool exists.\n  template:\n    src: www.conf.j2\n    dest: \"{{ php_fpm_pool_conf_path }}\"\n    owner: root\n    group: root\n    mode: 420\n    force: false\n  when: php_enable_php_fpm\n")
-    PROMPT = os.environ.get("PROMPT", "- name: Install apache on all RHEL servers")
-    CONTEXT = os.environ.get("CONTEXT", "")
-
-    request = common_service_pb2.AnsibleRequest(
-      context=CONTEXT, prompt=PROMPT,
-    )
 
     while True:
-      # TODO: support secure
-      channel = grpc.insecure_channel(MM_SERVING_HOST)
-      client = common_service_pb2_grpc.model-pingerExtServiceStub(channel)
-
-
       now = datetime.now()
       time_string = now.strftime("%Y-%m-%d %H:%M:%S")
 
       print("--------------------------------------")
       print("Sending Request at",time_string)
-      print("MM_SERVING_HOST="+MM_SERVING_HOST)
-      print("MM_MODEL_NAME="+MM_MODEL_NAME)
-      print("PROMPT="+PROMPT)
-      print("CONTEXT="+CONTEXT)
+      # print("MM_SERVING_HOST="+MM_SERVING_HOST)
+      # print("MM_MODEL_NAME="+MM_MODEL_NAME)
+      # print("PROMPT="+PROMPT)
+      # print("CONTEXT="+CONTEXT)
 
       start = time.time()
       try:
-        result = client.AnsiblePredict(request,
-          metadata=(
-            ("mm-vmodel-id", MM_MODEL_NAME),
-          ),
-          timeout=10
-        )
+        data = [0.3111400080477545, 1.9459399775518593, 1.0, 0.0, 0.0]
+        prediction = rest_request(data)
+        prediction
 
-        print(f"Generated {result.generated_token_count} tokens in {time.time() - start}s")
+        threshhold = 0.995
+
+        if (prediction[0] > threshhold):
+            print('fraud')
+        else:
+            print('not fraud')
+
+        # result = client.AnsiblePredict(request,
+        #   metadata=(
+        #     ("mm-vmodel-id", MM_MODEL_NAME),
+        #   ),
+        #   timeout=10
+        # )
+
+        # print(f"Generated something in {time.time() - start}s")
 
       except Exception as e:
         print(f"Errored after {time.time() - start}s: {e}")

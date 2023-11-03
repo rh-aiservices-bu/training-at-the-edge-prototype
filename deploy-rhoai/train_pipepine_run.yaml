@@ -204,18 +204,40 @@ spec:
         - name: SCRIPT
           value: |-
             export MODEL_VERSION=$(tasks.upload-model.results.modelversion)
-            echo $MODEL_VERSION
+            echo Model Version $MODEL_VERSION
             oc apply -f - <<EOF
             apiVersion: serving.kserve.io/v1beta1
             kind: InferenceService
             metadata:
-              name: fraud
+              name: fraud-latest
               annotations:
                 serving.kserve.io/deploymentMode: ModelMesh
-                openshift.io/display-name: Fraud version $MODEL_VERSION
+                openshift.io/display-name: Fraud Detection (latest)
               namespace: edgetraining
               labels:
-                name: fraud
+                name: fraud-latest
+                opendatahub.io/dashboard: "true"
+            spec:
+              predictor:
+                model:
+                  modelFormat:
+                    name: onnx
+                    version: '1'
+                  runtime: ovms-server-01
+                  storage:
+                    key: aws-connection-my-storage
+                    path: models/$MODEL_VERSION/model.onnx
+            ---
+            apiVersion: serving.kserve.io/v1beta1
+            kind: InferenceService
+            metadata:
+              name: fraud-$MODEL_VERSION
+              annotations:
+                serving.kserve.io/deploymentMode: ModelMesh
+                openshift.io/display-name: Fraud Detection (v$MODEL_VERSION)
+              namespace: edgetraining
+              labels:
+                name: fraud-$MODEL_VERSION
                 opendatahub.io/dashboard: "true"
             spec:
               predictor:

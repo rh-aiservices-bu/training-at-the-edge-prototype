@@ -1,4 +1,4 @@
-```bash
+<!-- ```bash
 
 oc delete project edgetraining
 
@@ -48,4 +48,4 @@ oc apply -n edgetraining -f ./train_pipepine_run.yaml
 
 
 
-
+ -->

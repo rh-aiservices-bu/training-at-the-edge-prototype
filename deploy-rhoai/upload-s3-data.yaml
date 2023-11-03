@@ -13,9 +13,17 @@ spec:
             - |-
               oc get secret minio-root-user
               env | grep MINIO
-              wget --no-check-certificate https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/main/training-code/pipeline-artifacts/training-artifacts/train-step.tar.gz -O train-step.tar.gz
-              wget --no-check-certificate https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/main/training-code/pipeline-artifacts/training-artifacts/upload-step.tar.gz -O upload-step.tar.gz
-              pip list
+              cd /tmp
+              echo  "do the wget"
+              pwd
+              ls -al
+              rm -rf *.tar.gz
+              BRANCH="main"
+              # BRANCH="hooking-things-together"
+              wget --no-check-certificate -q https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/${BRANCH}/training-code/pipeline-artifacts/training-artifacts/train-step.tar.gz -O train-step.tar.gz
+              wget --no-check-certificate -q https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/${BRANCH}/training-code/pipeline-artifacts/training-artifacts/upload-step.tar.gz -O upload-step.tar.gz
+              # pip list
+              echo  "try to upload"
               cat << 'EOF' | python3
 
               import boto3, os
@@ -36,14 +44,17 @@ spec:
 
               s3.upload_file("train-step.tar.gz", bucket_name, "edge/training-artifacts/train-step.tar.gz")
               s3.upload_file("upload-step.tar.gz", bucket_name, "edge/training-artifacts/upload-step.tar.gz")
-              
+
               EOF
+              echo "upload done"
           command:
             - /bin/bash
           envFrom:
             - secretRef:
                 name: minio-root-user
-          image: quay.io/rlundber/yolo_demo:1.0
+          # image: quay.io/rlundber/yolo_demo:1.0
+          # image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
+          image: quay.io/modh/odh-generic-data-science-notebook@sha256:f1c285f88f37abb0d54efc1941f349dfed824896568bcd359770e15d78fdb9f9
           imagePullPolicy: IfNotPresent
           name: create-buckets
       restartPolicy: Never

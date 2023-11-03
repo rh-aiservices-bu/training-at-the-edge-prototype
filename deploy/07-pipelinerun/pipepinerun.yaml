@@ -2,7 +2,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: training-pipeline
+  # name: training-pipeline
+  generateName: training-pipeline-
   annotations:
     tekton.dev/output_artifacts: '{"train-model": [{"key": "artifacts/$PIPELINERUN/train-model/mlpipeline-metrics.tgz",
       "name": "mlpipeline-metrics", "path": "/tmp/mlpipeline-metrics.json"}, {"key":

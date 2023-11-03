@@ -57,5 +57,4 @@ done
 echo
 
 # Execute the pipeline run
-oc delete -n edgetraining pipelinerun training-pipeline
-oc -n ${NS} apply -f ./07-pipelinerun/pipepinerun.yaml
+oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml

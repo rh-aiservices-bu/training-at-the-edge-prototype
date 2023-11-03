@@ -1,19 +1,6 @@
-
-
-```bash
-#Create Minio and secrets
-
-oc apply -n edgetraining -f https://raw.githubusercontent.com/rh-aiservices-bu/training-at-the-edge-prototype/main/deploy-rhoai/setup-minio.yaml
-
-
-```
-
-
 ```bash
 
-# oc delete project edgetraining
-
-
+oc delete project edgetraining
 
 cat <<EOF | oc apply  -f -
 kind: List
@@ -33,6 +20,26 @@ items:
         openshift.io/requester: admin
 EOF
 
+oc apply -n edgetraining -f ./bootstrap.project.yaml
+
+# wait for the secrets to be created ...
+echo -n 'Waiting for my-storage secret'
+while ! oc -n edgetraining get secret aws-connection-my-storage 2>/dev/null ; do
+  echo -n .
+  sleep 5
+done; echo
+
+
+oc apply -n edgetraining -f ./pipelineserver.yaml
+oc apply -n edgetraining -f ./modelserving.yaml
+
+```
+
+
+
+
+
+<!--
 cat <<EOF | oc apply  -f -
 kind: List
 metadata: {}
@@ -168,6 +175,51 @@ items:
         cronScheduleTimezone: UTC
         deploy: true
 
+  - apiVersion: datasciencepipelinesapplications.opendatahub.io/v1alpha1
+    kind: DataSciencePipelinesApplication
+    metadata:
+      finalizers:
+      - datasciencepipelinesapplications.opendatahub.io/finalizer
+      name: pipelines-definition
+      namespace: edgetraining
+    spec:
+      apiServer:
+        applyTektonCustomResource: true
+        archiveLogs: false
+        autoUpdatePipelineDefaultVersion: true
+        collectMetrics: true
+        dbConfigConMaxLifetimeSec: 120
+        deploy: true
+        enableOauth: true
+        enableSamplePipeline: false
+        injectDefaultScript: true
+        stripEOF: true
+        terminateStatus: Cancelled
+        trackArtifacts: true
+      database:
+        mariaDB:
+          deploy: true
+          pipelineDBName: mlpipeline
+          pvcSize: 10Gi
+          username: mlpipeline
+      objectStorage:
+        externalStorage:
+          bucket: pipeline-artifacts
+          host: minio-service.minio.svc:9000
+          port: ''
+          s3CredentialsSecret:
+            accessKey: AWS_ACCESS_KEY_ID
+            secretKey: AWS_SECRET_ACCESS_KEY
+            secretName: aws-connection-pipeline-artifacts
+          scheme: http
+          secure: false
+      persistenceAgent:
+        deploy: true
+        numWorkers: 2
+      scheduledWorkflow:
+        cronScheduleTimezone: UTC
+        deploy: true
+
 EOF
 
 
@@ -177,3 +229,4 @@ EOF
 
 
 ```
+-->

@@ -1,21 +1,22 @@
+---
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: training-pipeline
   annotations:
-    tekton.dev/output_artifacts: '{"run-a-file": [{"key": "artifacts/$PIPELINERUN/run-a-file/mlpipeline-metrics.tgz",
+    tekton.dev/output_artifacts: '{"train-model": [{"key": "artifacts/$PIPELINERUN/train-model/mlpipeline-metrics.tgz",
       "name": "mlpipeline-metrics", "path": "/tmp/mlpipeline-metrics.json"}, {"key":
-      "artifacts/$PIPELINERUN/run-a-file/mlpipeline-ui-metadata.tgz", "name": "mlpipeline-ui-metadata",
-      "path": "/tmp/mlpipeline-ui-metadata.json"}], "run-a-file-2": [{"key": "artifacts/$PIPELINERUN/run-a-file-2/mlpipeline-metrics.tgz",
+      "artifacts/$PIPELINERUN/train-model/mlpipeline-ui-metadata.tgz", "name": "mlpipeline-ui-metadata",
+      "path": "/tmp/mlpipeline-ui-metadata.json"}], "upload-model": [{"key": "artifacts/$PIPELINERUN/upload-model/mlpipeline-metrics.tgz",
       "name": "mlpipeline-metrics", "path": "/tmp/mlpipeline-metrics.json"}, {"key":
-      "artifacts/$PIPELINERUN/run-a-file-2/mlpipeline-ui-metadata.tgz", "name": "mlpipeline-ui-metadata",
+      "artifacts/$PIPELINERUN/upload-model/mlpipeline-ui-metadata.tgz", "name": "mlpipeline-ui-metadata",
       "path": "/tmp/mlpipeline-ui-metadata.json"}]}'
     tekton.dev/input_artifacts: '{}'
     tekton.dev/artifact_bucket: mlpipeline
     tekton.dev/artifact_endpoint: minio-service.kubeflow:9000
     tekton.dev/artifact_endpoint_scheme: http://
-    tekton.dev/artifact_items: '{"run-a-file": [["mlpipeline-metrics", "/tmp/mlpipeline-metrics.json"],
-      ["mlpipeline-ui-metadata", "/tmp/mlpipeline-ui-metadata.json"]], "run-a-file-2":
+    tekton.dev/artifact_items: '{"train-model": [["mlpipeline-metrics", "/tmp/mlpipeline-metrics.json"],
+      ["mlpipeline-ui-metadata", "/tmp/mlpipeline-ui-metadata.json"]], "upload-model":
       [["mlpipeline-metrics", "/tmp/mlpipeline-metrics.json"], ["mlpipeline-ui-metadata",
       "/tmp/mlpipeline-ui-metadata.json"]]}'
     sidecar.istio.io/inject: "false"
@@ -29,7 +30,7 @@ metadata:
 spec:
   pipelineSpec:
     tasks:
-    - name: run-a-file
+    - name: train-model
       taskSpec:
         steps:
         - name: main
@@ -110,7 +111,7 @@ spec:
             pipelines.kubeflow.org/task_display_name: train
             pipelines.kubeflow.org/component_spec_digest: '{"name": "Run a file",
               "outputs": [], "version": "Run a file@sha256=97249c45e81a65d0b17c1e6975d0fd438ba3624f7a464891ea373c416147f998"}'
-    - name: run-a-file-2
+    - name: upload-model
       taskSpec:
         results:
         - name: modelversion
@@ -197,18 +198,18 @@ spec:
             pipelines.kubeflow.org/component_spec_digest: '{"name": "Run a file",
               "outputs": [], "version": "Run a file@sha256=5cbd16430aa20d95bc9f685859563ea4c04a687e71b82769839d2cbd99fef667"}'
       runAfter:
-      - run-a-file
+      - train-model
     - name: update-served-model
       params:
         - name: SCRIPT
           value: |-
-            export MODEL_VERSION=$(tasks.run-a-file-2.results.modelversion)
+            export MODEL_VERSION=$(tasks.upload-model.results.modelversion)
             echo $MODEL_VERSION
             oc apply -f - <<EOF
             apiVersion: serving.kserve.io/v1beta1
             kind: InferenceService
             metadata:
-              name: fraud-v01
+              name: fraud
               annotations:
                 serving.kserve.io/deploymentMode: ModelMesh
                 openshift.io/display-name: Fraud version $MODEL_VERSION
@@ -233,4 +234,4 @@ spec:
         kind: Task
         name: openshift-client
       runAfter:
-      - run-a-file-2
+      - upload-model

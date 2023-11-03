@@ -1,0 +1,52 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: upload-s3-data
+spec:
+  selector: {}
+  template:
+    spec:
+      containers:
+        - args:
+            - -ec
+            - |-
+              oc get secret minio-root-user
+              env | grep MINIO
+              wget --no-check-certificate https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/main/training-code/pipeline-artifacts/training-artifacts/train-step.tar.gz -O train-step.tar.gz
+              wget --no-check-certificate https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/main/training-code/pipeline-artifacts/training-artifacts/upload-step.tar.gz -O upload-step.tar.gz
+              pip list
+              cat << 'EOF' | python3
+
+              import boto3, os
+              import botocore
+
+              print("Uploading...")
+
+              bucket_name = 'pipeline-artifacts'
+              endpoint_url="http://minio:9000"
+              aws_access_key_id=os.getenv("MINIO_ROOT_USER")
+              aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD")
+
+
+              s3 = boto3.client("s3",
+                            endpoint_url=endpoint_url,
+                            aws_access_key_id=aws_access_key_id,
+                            aws_secret_access_key=aws_secret_access_key)
+
+              s3.upload_file("train-step.tar.gz", bucket_name, "edge/training-artifacts/train-step.tar.gz")
+              s3.upload_file("upload-step.tar.gz", bucket_name, "edge/training-artifacts/upload-step.tar.gz")
+              
+              EOF
+          command:
+            - /bin/bash
+          envFrom:
+            - secretRef:
+                name: minio-root-user
+          image: quay.io/rlundber/yolo_demo:1.0
+          imagePullPolicy: IfNotPresent
+          name: create-buckets
+      restartPolicy: Never
+      serviceAccount: demo-setup
+      serviceAccountName: demo-setup
+---

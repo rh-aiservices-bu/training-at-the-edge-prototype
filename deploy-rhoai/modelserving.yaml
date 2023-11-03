@@ -66,12 +66,12 @@ apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
 metadata:
   annotations:
-    openshift.io/display-name: Fraud v01
+    openshift.io/display-name: Fraud Detection (latest)
     serving.kserve.io/deploymentMode: ModelMesh
   labels:
-    name: fraud-v01
+    name: fraud-latest
     opendatahub.io/dashboard: "true"
-  name: fraud-v01
+  name: fraud-latest
   namespace: edgetraining
 spec:
   predictor:

@@ -1,0 +1,12 @@
+---
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  name: edgetraining
+  labels:
+    kubernetes.io/metadata.name: edgetraining
+    modelmesh-enabled: 'true'
+    opendatahub.io/dashboard: 'true'
+  annotations:
+    openshift.io/display-name: "Edge Training"
+    openshift.io/requester: admin

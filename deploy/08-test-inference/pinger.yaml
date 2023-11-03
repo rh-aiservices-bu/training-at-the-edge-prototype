@@ -1,7 +1,3 @@
-
-# deployed_model_name = "fraud"
-# rest_url = "http://modelmesh-serving:8008"
-# infer_url = f"{rest_url}/v2/models/{deployed_model_name}/infer"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -34,11 +30,12 @@ spec:
         - /ping_model.py
         env:
         - name: MM_SERVING_HOST
-          value: modelmesh-serving:8033
+          value: modelmesh-serving:8008
         - name: MM_MODEL_NAME
-          value: ansible-wisdom-v06
+          # value: fraud-4
+          value: fraud-latest
         - name: SLEEP_TIME
-          value: "2"
+          value: "5"
         resources:
           limits:
             cpu: "0.2"
@@ -47,48 +44,10 @@ spec:
         - name: pinger-config
           subPath: ping_model.py
           mountPath: /ping_model.py
-      imagePullSecrets:
-      - name: watson-runtime-registry-secret
       volumes:
       - name: pinger-config
         configMap:
           name: model-pinger
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ---
 apiVersion: v1
@@ -100,10 +59,17 @@ data:
     import os
     import time
     from datetime import datetime
+    import random
 
-    deployed_model_name = "fraud-latest"
-    rest_url = "http://modelmesh-serving:8008"
+    MM_SERVING_HOST = os.environ.get("MM_SERVING_HOST", "modelmesh-serving:8008")
+    MM_MODEL_NAME = os.environ.get("MM_MODEL_NAME", "fraud-latest")
+
+    # deployed_model_name = "fraud-latest"
+    # rest_url = "http://modelmesh-serving:8008"
+    deployed_model_name = MM_MODEL_NAME
+    rest_url = f"http://{MM_SERVING_HOST}"
     infer_url = f"{rest_url}/v2/models/{deployed_model_name}/infer"
+    print(infer_url)
 
     import requests
 
@@ -137,35 +103,32 @@ data:
 
       print("--------------------------------------")
       print("Sending Request at",time_string)
-      # print("MM_SERVING_HOST="+MM_SERVING_HOST)
-      # print("MM_MODEL_NAME="+MM_MODEL_NAME)
-      # print("PROMPT="+PROMPT)
-      # print("CONTEXT="+CONTEXT)
 
       start = time.time()
       try:
-        data = [0.3111400080477545, 1.9459399775518593, 1.0, 0.0, 0.0]
+        random_dist = round(random.uniform(0, 50), 2)
+        data = [random_dist, 1.9459399775518593, 1.0, 0.0, 0.0]
+        print("Data sent to model:")
+        print(data)
+
+        # Start the timer
+        start_time = time.time()
+
         prediction = rest_request(data)
-        prediction
 
-        threshhold = 0.995
+        # End the timer
+        end_time = time.time()
 
-        if (prediction[0] > threshhold):
-            print('fraud')
-        else:
-            print('not fraud')
+        # Calculate the elapsed time in milliseconds
+        response_time_ms = (end_time - start_time) * 1000
 
-        # result = client.AnsiblePredict(request,
-        #   metadata=(
-        #     ("mm-vmodel-id", MM_MODEL_NAME),
-        #   ),
-        #   timeout=10
-        # )
+         # prediction
+        print("Likelyhood of fraud")
+        print(str(prediction[0]*100)+"%")
 
-        # print(f"Generated something in {time.time() - start}s")
+        print("Prediction took ", response_time_ms, "milliseconds")
 
       except Exception as e:
         print(f"Errored after {time.time() - start}s: {e}")
-
 
       time.sleep(SLEEP_TIME)

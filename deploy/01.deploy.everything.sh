@@ -58,3 +58,7 @@ echo
 
 # Execute the pipeline run
 oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml
+
+# deploy the pinger
+oc -n edgetraining delete -f ./08-test-inference/pinger.yaml
+oc -n edgetraining apply -f ./08-test-inference/pinger.yaml

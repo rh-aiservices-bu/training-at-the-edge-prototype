@@ -55,3 +55,6 @@ new_version = latest_version + 1
 print(f"New version: {new_version}")
 
 bucket.upload_file("model.onnx", f"models/{new_version}/model.onnx")
+f = open(".model-version", "w")
+f.write(f"{new_version}")
+f.close()

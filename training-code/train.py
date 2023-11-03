@@ -118,3 +118,27 @@ prediction = sess.run([output_name], {input_name: scaler.transform(sally_transac
 
 print("Was Sally's transaction predicted to be fraudulent?  ")
 print(np.squeeze(prediction) > threshold)
+
+## Fake test of model quality. This will fail 50% of the time.
+
+import random
+
+def simulate_failure():
+    # Generate a random number between 0 and 1
+    random_number = random.random()
+
+    # Set the probability of failure to 50%
+    failure_probability = 0.5
+
+    # Check if the random number is less than the failure probability
+    if random_number < failure_probability:
+        # Simulate failure
+        raise Exception("Model Quality is insufficient. Failing task because of it.")
+    else:
+        print("Model Quality is sufficient. Continuing.")
+
+try:
+    simulate_failure()
+except Exception as e:
+    print(f"Simulation failed with error: {e}")
+

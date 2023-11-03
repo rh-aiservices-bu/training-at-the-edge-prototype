@@ -34,7 +34,9 @@ oc apply -n edgetraining -f ./pipelineserver.yaml
 oc apply -n edgetraining -f ./modelserving.yaml
 
 # upload the code to S3
+oc delete -n edgetraining job upload-s3-data
 oc apply -n edgetraining -f ./upload-s3-data.yaml
+
 # add the task
 oc apply -n edgetraining -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.2/openshift-client.yaml
 

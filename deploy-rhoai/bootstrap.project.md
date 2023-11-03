@@ -23,7 +23,7 @@ EOF
 oc apply -n edgetraining -f ./bootstrap.project.yaml
 
 # wait for the secrets to be created ...
-echo -n 'Waiting for my-storage secret'
+echo -n 'Waiting for my-storage secret\n'
 while ! oc -n edgetraining get secret aws-connection-my-storage 2>/dev/null ; do
   echo -n .
   sleep 5
@@ -32,6 +32,15 @@ done; echo
 
 oc apply -n edgetraining -f ./pipelineserver.yaml
 oc apply -n edgetraining -f ./modelserving.yaml
+
+# upload the code to S3
+oc apply -n edgetraining -f ./upload-s3-data.yaml
+# add the task
+oc apply -n edgetraining -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/openshift-client/0.2/openshift-client.yaml
+
+# rerun the pipeline
+oc delete -n edgetraining pipelinerun training-pipeline
+oc apply -n edgetraining -f ./train_pipepine_run.yaml
 
 ```
 
@@ -129,7 +138,7 @@ items:
           storage:
             key: aws-connection-my-storage
             path: modelv01/
-  
+
   - apiVersion: datasciencepipelinesapplications.opendatahub.io/v1alpha1
     kind: DataSciencePipelinesApplication
     metadata:

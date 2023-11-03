@@ -36,14 +36,15 @@ spec:
 
               s3.upload_file("train-step.tar.gz", bucket_name, "edge/training-artifacts/train-step.tar.gz")
               s3.upload_file("upload-step.tar.gz", bucket_name, "edge/training-artifacts/upload-step.tar.gz")
-              
+
               EOF
           command:
             - /bin/bash
           envFrom:
             - secretRef:
                 name: minio-root-user
-          image: quay.io/rlundber/yolo_demo:1.0
+          # image: quay.io/rlundber/yolo_demo:1.0
+          image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
           imagePullPolicy: IfNotPresent
           name: create-buckets
       restartPolicy: Never

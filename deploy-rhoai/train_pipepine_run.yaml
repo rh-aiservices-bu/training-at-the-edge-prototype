@@ -211,13 +211,18 @@ spec:
               name: fraud-v01
               annotations:
                 serving.kserve.io/deploymentMode: ModelMesh
+                openshift.io/display-name: Fraud version $MODEL_VERSION
               namespace: edgetraining
+              labels:
+                name: fraud
+                opendatahub.io/dashboard: "true"
             spec:
               predictor:
                 model:
                   modelFormat:
                     name: onnx
                     version: '1'
+                  runtime: ovms-server-01
                   storage:
                     key: aws-connection-my-storage
                     path: models/$MODEL_VERSION/model.onnx

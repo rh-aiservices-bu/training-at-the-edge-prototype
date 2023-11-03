@@ -108,7 +108,7 @@ data:
       try:
         random_dist = round(random.uniform(0, 50), 2)
         data = [random_dist, 1.9459399775518593, 1.0, 0.0, 0.0]
-        print("Data sent to model:")
+        print("Data sent to model ("+deployed_model_name+"):")
         print(data)
 
         # Start the timer

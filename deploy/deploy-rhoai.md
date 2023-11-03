@@ -59,7 +59,7 @@ spec:
     codeflare:
       managementState: Removed
     dashboard:
-      managementState: Removed
+      managementState: Managed
     datasciencepipelines:
       managementState: Managed
     kserve:
@@ -69,6 +69,6 @@ spec:
     ray:
       managementState: Removed
     workbenches:
-      managementState: Removed
+      managementState: Managed
 EOF
 ```

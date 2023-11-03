@@ -40,24 +40,18 @@ def upload_directory_to_s3(local_directory, s3_prefix):
             bucket.upload_file(file_path, s3_key)
 
 def list_objects(prefix):
+    latest_version = 0
     filter = bucket.objects.filter(Prefix=prefix)
     for obj in filter.all():
         print(obj.key)
+        version = int(obj.key.split("/")[-2])
+        if version > latest_version:
+            latest_version = version
+    
+    return latest_version
 
-os.makedirs("models", exist_ok=True)
+latest_version = list_objects("models")
+new_version = latest_version + 1
+print(f"New version: {new_version}")
 
-
-import shutil
-# Define the source file and destination folder paths
-source_file = 'model.onnx'
-destination_folder = 'models'
-
-# Use shutil.copy to copy the file to the destination folder
-shutil.copy(source_file, destination_folder)
-
-
-list_objects("models")
-
-upload_directory_to_s3("models", "models")
-
-list_objects("models")
+bucket.upload_file("model.onnx", f"models/{new_version}/model.onnx")

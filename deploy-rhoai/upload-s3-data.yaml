@@ -19,7 +19,7 @@ spec:
               ls -al
               rm -rf *.tar.gz
               BRANCH="main"
-              BRANCH="hooking-things-together"
+              # BRANCH="hooking-things-together"
               wget --no-check-certificate -q https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/${BRANCH}/training-code/pipeline-artifacts/training-artifacts/train-step.tar.gz -O train-step.tar.gz
               wget --no-check-certificate -q https://github.com/rh-aiservices-bu/training-at-the-edge-prototype/raw/${BRANCH}/training-code/pipeline-artifacts/training-artifacts/upload-step.tar.gz -O upload-step.tar.gz
               # pip list

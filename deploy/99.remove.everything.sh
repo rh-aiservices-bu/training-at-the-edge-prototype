@@ -29,5 +29,9 @@ oc delete -f ./02-pipelines/operator.yaml
 oc -n openshift-operators delete ClusterServiceVersion openshift-pipelines-operator-rh.v1.12.1
 oc -n openshift-operators delete OperatorGroup global-operators
 
+# Pipeline Server
+oc -n ${NS} delete -f ./06-pipelineserver/pipelineserver.yaml &
+oc patch -n  ${NS} datasciencepipelinesapplications pipelines-definition --type=merge -p '{"metadata": {"finalizers":null}}'
+
 # remove project
 oc delete project edgetraining

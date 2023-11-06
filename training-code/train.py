@@ -137,8 +137,5 @@ def simulate_failure():
     else:
         print("Model Quality is sufficient. Continuing.")
 
-try:
-    simulate_failure()
-except Exception as e:
-    print(f"Simulation failed with error: {e}")
 
+simulate_failure()

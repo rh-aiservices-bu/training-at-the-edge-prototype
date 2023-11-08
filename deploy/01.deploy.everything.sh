@@ -3,13 +3,13 @@ NS=${NS:-edgetraining}
 
 oc cluster-info
 
-if oc cluster-info | grep -E -q 'dynamic\.opentlc\.com'
-then
-    printf "OK. Using RHPDS cluster. Continuing\n"
-else
-    printf "Nope. You are not connected to an RHPDS. That is dangerous. Exiting \n"
-    exit 1
-fi
+# if oc cluster-info | grep -E -q 'dynamic\.opentlc\.com'
+# then
+#     printf "OK. Using RHPDS cluster. Continuing\n"
+# else
+#     printf "Nope. You are not connected to an RHPDS. That is dangerous. Exiting \n"
+#     exit 1
+# fi
 
 
 

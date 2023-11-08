@@ -15,6 +15,10 @@ oc cluster-info
 
 ## RHOAI
 oc apply -f ./01-rhoai/operator.yaml
+
+## insert step here that waits for CRDs to exist
+## TODO
+
 oc apply -f ./01-rhoai/dsc.yaml
 
 # Pipelines Operator
@@ -41,6 +45,8 @@ done
 echo
 
 # Model Serving
+  # ensure model serving stuff exists here.
+  # TODO
 oc -n ${NS} apply -f ./05-serving/modelserving.yaml
 
 # Pipeline Server
@@ -65,3 +71,6 @@ oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml
 # deploy the pinger
 oc -n edgetraining delete -f ./08-test-inference/pinger.yaml
 oc -n edgetraining apply -f ./08-test-inference/pinger.yaml
+
+# alternative way of doing the pipeline (experimental)
+# oc -n ${NS} create -f ./07-pipelinerun/pipepine.yaml

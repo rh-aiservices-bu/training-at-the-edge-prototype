@@ -233,7 +233,7 @@ spec:
       - args:
         - -ec
         - |-
-          curl -LO https://ai-on-openshift.io/odh-rhods/img-triton/card.fraud.detection.onnx
+          # curl -LO https://ai-on-openshift.io/odh-rhods/img-triton/card.fraud.detection.onnx
           oc get secret minio-root-user
           env | grep MINIO
           cat << 'EOF' | python3
@@ -251,10 +251,10 @@ spec:
           print('creating my-storage bucket')
           if bucket not in [bu["Name"] for bu in s3.list_buckets()["Buckets"]]:
             s3.create_bucket(Bucket=bucket)
-          filename = "card.fraud.detection.onnx"
-          print('Uploading a model file to it')
-          with open(filename, "rb") as f:
-            s3.upload_fileobj(f, bucket, f'modelv01/{filename}')
+          # filename = "card.fraud.detection.onnx"
+          # print('Uploading a model file to it')
+          # with open(filename, "rb") as f:
+          #   s3.upload_fileobj(f, bucket, f'modelv01/{filename}')
           EOF
         command:
         - /bin/bash

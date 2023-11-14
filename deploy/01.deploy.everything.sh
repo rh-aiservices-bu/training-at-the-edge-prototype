@@ -17,15 +17,29 @@ oc cluster-info
 oc apply -f ./01-rhoai/operator.yaml
 
 ## insert step here that waits for CRDs to exist
-## TODO
+while ! oc get crd | grep -qF datasciencecluster  2>/dev/null ; do
+  echo -n .
+  sleep 5
+done; echo
 
 oc apply -f ./01-rhoai/dsc.yaml
 
 # Pipelines Operator
 oc apply -f ./02-pipelines/operator.yaml
+# wait for project
+while ! oc get crd | grep -qF pipelines  2>/dev/null ; do
+  echo -n .
+  sleep 5
+done; echo
 
 # Project
 oc apply -f ./03-project/project.yaml
+
+# wait for project
+while ! oc get project | grep -qF edgetraining  2>/dev/null ; do
+  echo -n .
+  sleep 5
+done; echo
 
 # Object Storage
 oc -n ${NS} apply -f ./04-minio/minio.yaml
@@ -56,7 +70,11 @@ oc -n ${NS} apply -f ./06-pipelineserver/pipelineserver.yaml
 oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml
 
 # deploy the pinger
-oc -n edgetraining delete -f ./08-test-inference/pinger.yaml
+
+if oc -n edgetraining get deploy  | grep -qF pinger  2>/dev/null ; then
+  ## delete it if it exists
+  oc -n edgetraining delete -f ./08-test-inference/pinger.yaml
+fi
 oc -n edgetraining apply -f ./08-test-inference/pinger.yaml
 
 # alternative way of doing the pipeline (experimental)

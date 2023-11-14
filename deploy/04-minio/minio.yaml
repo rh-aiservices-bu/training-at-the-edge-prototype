@@ -261,8 +261,7 @@ spec:
         envFrom:
         - secretRef:
             name: minio-root-user
-        # image: image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/s2i-generic-data-science-notebook:2023.1
-        image: quay.io/modh/odh-generic-data-science-notebook@sha256:f1c285f88f37abb0d54efc1941f349dfed824896568bcd359770e15d78fdb9f9
+        image: quay.io/rlundber/sds-small:1.8
         imagePullPolicy: IfNotPresent
         name: create-buckets
       initContainers:

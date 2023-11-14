@@ -1,8 +1,3 @@
-import subprocess
-
-requirements_file = "requirements.txt"
-subprocess.call(["pip", "install", "-r", requirements_file])
-
 import numpy as np
 import pandas as pd
 from keras.models import Sequential

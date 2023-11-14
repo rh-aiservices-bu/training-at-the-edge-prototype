@@ -52,19 +52,6 @@ oc -n ${NS} apply -f ./05-serving/modelserving.yaml
 # Pipeline Server
 oc -n ${NS} apply -f ./06-pipelineserver/pipelineserver.yaml
 
-# upload the .tgz stuff
-oc -n ${NS} apply -f ./07-pipelinerun/upload-s3-data.yaml
-
-# install new task
-oc -n ${NS} apply -f ./07-pipelinerun/task.yaml
-
-echo -n 'Waiting for upload job to complete.'
-while [ "$(oc -n ${NS} get pod -l job-name=upload-s3-data -o jsonpath='{.items[0].status.phase}')" != "Succeeded" ] ; do
-  echo -n .
-  sleep 5
-done
-echo
-
 # Execute the pipeline run
 oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml
 

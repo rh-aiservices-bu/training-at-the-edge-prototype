@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: pinger
-        image: quay.io/egranger/workbench-images/sds:v01
+        image: quay.io/rlundber/sds-small:1.8
         command:
         - python
         - -u

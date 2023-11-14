@@ -54,7 +54,7 @@ spec:
                 name: minio-root-user
           # image: quay.io/rlundber/yolo_demo:1.0
           # image: image-registry.openshift-image-registry.svc:5000/openshift/tools:latest
-          image: quay.io/egranger/workbench-images/sds:v01
+          image: quay.io/rlundber/sds-small:1.8
           imagePullPolicy: IfNotPresent
           name: create-buckets
       restartPolicy: Never

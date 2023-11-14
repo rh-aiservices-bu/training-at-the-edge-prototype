@@ -88,7 +88,7 @@ spec:
           command:
             - sh
             - -c
-          image: quay.io/egranger/workbench-images/sds:v01
+          image: quay.io/rlundber/sds-small:1.8
           envFrom:
             - secretRef:
                 name: minio-root-user
@@ -156,7 +156,7 @@ spec:
               secretKeyRef:
                 key: AWS_DEFAULT_REGION
                 name: aws-connection-my-storage
-          image: quay.io/modh/runtime-images@sha256:8df90db22b29afb1cd9c81d52be9145fed50e3b04ec80bb7ea7ecaa7476dbe5c
+          image: quay.io/rlundber/sds-small:1.8
         stepTemplate:
           volumeMounts:
           - name: mlpipeline-metrics
@@ -249,7 +249,7 @@ spec:
               secretKeyRef:
                 key: AWS_DEFAULT_REGION
                 name: aws-connection-my-storage
-          image: quay.io/modh/runtime-images@sha256:8df90db22b29afb1cd9c81d52be9145fed50e3b04ec80bb7ea7ecaa7476dbe5c
+          image: quay.io/rlundber/sds-small:1.8
         stepTemplate:
           volumeMounts:
           - name: mlpipeline-metrics

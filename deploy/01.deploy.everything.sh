@@ -66,6 +66,9 @@ oc -n ${NS} apply -f ./05-serving/modelserving.yaml
 # Pipeline Server
 oc -n ${NS} apply -f ./06-pipelineserver/pipelineserver.yaml
 
+# install new task
+oc -n ${NS} apply -f ./07-pipelinerun/task.yaml
+
 # Execute the pipeline run
 oc -n ${NS} create -f ./07-pipelinerun/pipepinerun.yaml
 

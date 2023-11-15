@@ -73,11 +73,13 @@ spec:
               aws_access_key_id=os.getenv("MINIO_ROOT_USER")
               aws_secret_access_key=os.getenv("MINIO_ROOT_PASSWORD")
 
-
+              TIMEOUT = 3
+              config = BotoConfig(connect_timeout=TIMEOUT, retries={"mode": "standard"})
               s3 = boto3.client("s3",
                             endpoint_url=endpoint_url,
                             aws_access_key_id=aws_access_key_id,
-                            aws_secret_access_key=aws_secret_access_key)
+                            aws_secret_access_key=aws_secret_access_key,
+                            config=config)
 
               s3.upload_file("train-step.tar.gz", bucket_name, f"edge/training-artifacts-{current_time}/train-step.tar.gz")
               s3.upload_file("upload-step.tar.gz", bucket_name, f"edge/training-artifacts-{current_time}/upload-step.tar.gz")
